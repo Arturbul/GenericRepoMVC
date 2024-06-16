@@ -20,7 +20,8 @@ namespace GenericRepoMVC.WebApp.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get([FromQuery] GetPersonRequest? getPersons = null)
+        public async Task<IActionResult> Get([FromQuery] GetPersonRequest? getPersons = null,
+            [FromQuery] PersonOrderByRequest? orderByRequest = null)
         {
             if (getPersons == null)
             {
@@ -31,9 +32,12 @@ namespace GenericRepoMVC.WebApp.Controllers
                 return BadRequest(ModelState);
             }
             var filter = createFilter(getPersons);
-            return Ok(await _personServicies.Get(filter: filter));
+            var order = createOrderBy(orderByRequest);
+            return Ok(await _personServicies.Get(filter: filter, orderBy: order));
 
         }
+
+
         [HttpGet("single")]
         public async Task<IActionResult> GetSingle([FromQuery] GetPersonRequest? getPerson = null)
         {
@@ -46,7 +50,7 @@ namespace GenericRepoMVC.WebApp.Controllers
                 return BadRequest(ModelState);
             }
             var filter = createFilter(getPerson);
-            return Ok(await _personServicies.GetSingle(filter: filter));
+            return Ok(await _personServicies.GetSingle(filter));
 
         }
 
@@ -108,7 +112,111 @@ namespace GenericRepoMVC.WebApp.Controllers
             var lambda = Expression.Lambda<Func<Person, bool>>(body, parameterExp);
             return lambda;
         }
+        /*private Func<IQueryable<Person>, IOrderedQueryable<Person>>? createOrderBy(PersonOrderByRequest? orderByRequest)
+        {
+            if (orderByRequest == null)
+            {
+                return null;
+            }
+            var sortedRequestDict = getSortedRequestDict(orderByRequest);
+            var orderByList = new List<Expression<Func<Person, object>>>();
+            foreach (var item in sortedRequestDict)
+            {
+                orderByList.Add(x => x.Equals(item.ToString()));
+            }
+            orderByList.Add(x => x.Id);
 
+            var resultOrderedQueryable = orderByList.Aggregate<Expression<Func<Person, object>>, IOrderedQueryable<Person>>
+                (
+                null, (current, orderBy)
+                => current != null ?
+                current.ThenBy(orderBy)
+                : query.OrderBy(orderBy)
+                );
 
+            *//* if (orderByRequest.OrderById)
+             {
+                 orderBy = query => query.OrderBy(p => p.Id);
+             }
+             else if (orderByRequest.OrderByFirstName)
+             {
+                 orderBy = query => query.OrderBy(p => p.FirstName);
+             }
+             else if (orderByRequest.OrderByLastName)
+             {
+                 orderBy = query => query.OrderBy(p => p.LastName);
+             }
+             else if (orderByRequest.OrderByDateOfBirth)
+             {
+                 orderBy = query => query.OrderBy(p => p.DateOfBirth);
+             }*//*
+            //orderBy = query => query.OrderBy(p => p.DateOfBirth).ThenBy(p => p.FirstName);
+            return orderBy;
+        }
+*/
+        private Func<IQueryable<Person>, IOrderedQueryable<Person>>? createOrderBy(PersonOrderByRequest? orderByRequest)
+        {
+            if (orderByRequest == null)
+            {
+                return null;
+            }
+
+            var sortedRequestDict = getSortedRequestDict(orderByRequest);
+
+            IOrderedQueryable<Person> ApplyOrdering(IQueryable<Person> query, string propertyName, bool isFirst)
+            {
+                var parameter = Expression.Parameter(typeof(Person), "p");
+                var property = Expression.Property(parameter, propertyName);
+                var lambda = Expression.Lambda<Func<Person, object>>(Expression.Convert(property, typeof(object)), parameter);
+
+                if (isFirst)
+                {
+                    return query.OrderBy(lambda);
+                }
+                else
+                {
+                    return ((IOrderedQueryable<Person>)query).ThenBy(lambda);
+                }
+            }
+
+            return query =>
+            {
+                IOrderedQueryable<Person> orderedQuery = null;
+
+                foreach (var propertyName in sortedRequestDict)
+                {
+                    if (orderedQuery == null)
+                    {
+                        orderedQuery = ApplyOrdering(query, propertyName, true);
+                    }
+                    else
+                    {
+                        orderedQuery = ApplyOrdering(orderedQuery, propertyName, false);
+                    }
+                }
+
+                return orderedQuery;
+            };
+        }
+
+        private IEnumerable<string> getSortedRequestDict(PersonOrderByRequest orderByRequest)
+        {
+            // 0 0 1 2 
+            //id fname lname date
+            var props = orderByRequest.GetType().GetProperties(); //prop names 4 orderby
+            var orderPriorityPairs = new Dictionary<string, int>();
+            foreach (var prop in props)
+            {
+                var value = (int)prop.GetValue(orderByRequest)!;
+                if (value != 0)
+                {
+                    orderPriorityPairs.Add(prop.Name, value);
+                }
+            }
+            var sortedDict = orderPriorityPairs
+                .OrderBy(e => e.Value)
+                .ToDictionary();
+            return sortedDict.Keys.ToArray();
+        }
     }
 }

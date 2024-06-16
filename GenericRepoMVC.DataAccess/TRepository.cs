@@ -49,13 +49,21 @@ namespace GenericRepoMVC.DataAccess
             return added.Entity;
         }
 
-        public Task<TEntity> Update(TEntity entity)
+        public async Task<TEntity> Update(TEntity entity)
         {
-            throw new NotImplementedException();
+            var updated = _context.Entry(entity);
+            updated.State = EntityState.Modified;
+
+            await this.SaveAsync();
+            return updated.Entity;
         }
-        public Task<object> Delete(TEntity entity)
+        public async Task<object> Delete(TEntity entity)
         {
-            throw new NotImplementedException();
+            var added = _context.Entry(entity);
+            added.State = EntityState.Deleted;
+
+            await this.SaveAsync();
+            return added.Entity;
         }
 
         public async Task<object> SaveAsync()
