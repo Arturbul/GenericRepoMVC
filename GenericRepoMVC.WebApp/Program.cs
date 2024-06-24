@@ -1,4 +1,5 @@
 using GenericRepoMVC.Domain.Data;
+using GenericRepoMVC.WebApp.Configuration.Swagger;
 using GenericRepoMVC.WebApp.Mappers;
 using Microsoft.EntityFrameworkCore;
 
@@ -22,7 +23,8 @@ builder.Services.AddSwaggerGen(options =>
     xmlFiles.ForEach(xmlFile => options.IncludeXmlComments(xmlFile));
 });
 
-builder.Services.AddAutoMapper(typeof(PersonProfile));
+//AutoMapper
+builder.Services.AddAutoMapper(typeof(MapperProfile));
 
 var app = builder.Build();
 

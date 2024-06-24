@@ -1,4 +1,4 @@
-﻿namespace GenericRepoMVC.WebApp.RequestModels
+﻿namespace GenericRepoMVC.ViewModels
 {
     public class GetPersonRequest
     {

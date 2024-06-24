@@ -3,13 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34728.123
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenericRepoMVC.WebApp", "GenericRepoMVC.WebApp\GenericRepoMVC.WebApp.csproj", "{D45ED44F-5224-4B02-B8CB-6A3C8ED0C51D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GenericRepoMVC.WebApp", "GenericRepoMVC.WebApp\GenericRepoMVC.WebApp.csproj", "{D45ED44F-5224-4B02-B8CB-6A3C8ED0C51D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenericRepoMVC.Domain", "GenericRepoMVC.Domain\GenericRepoMVC.Domain.csproj", "{1DFF36C9-6A76-4A5A-B3CA-D6EEF821AF2D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GenericRepoMVC.Domain", "GenericRepoMVC.Domain\GenericRepoMVC.Domain.csproj", "{1DFF36C9-6A76-4A5A-B3CA-D6EEF821AF2D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenericRepoMVC.DataAccess", "GenericRepoMVC.DataAccess\GenericRepoMVC.DataAccess.csproj", "{756652B4-85B1-44E3-9634-115381CA30F6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GenericRepoMVC.DataAccess", "GenericRepoMVC.DataAccess\GenericRepoMVC.DataAccess.csproj", "{756652B4-85B1-44E3-9634-115381CA30F6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenericRepoMVC.Servicies", "GenericRepoMVC.Servicies\GenericRepoMVC.Servicies.csproj", "{E9063564-20ED-40A1-A6EE-5B74B666D292}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GenericRepoMVC.Servicies", "GenericRepoMVC.Servicies\GenericRepoMVC.Servicies.csproj", "{E9063564-20ED-40A1-A6EE-5B74B666D292}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenericRepoMVC.ViewModels", "GenericRepoMVC.ViewModels\GenericRepoMVC.ViewModels.csproj", "{9225F12B-D3FB-421F-A00C-3C9D260099FF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{E9063564-20ED-40A1-A6EE-5B74B666D292}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E9063564-20ED-40A1-A6EE-5B74B666D292}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E9063564-20ED-40A1-A6EE-5B74B666D292}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9225F12B-D3FB-421F-A00C-3C9D260099FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9225F12B-D3FB-421F-A00C-3C9D260099FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9225F12B-D3FB-421F-A00C-3C9D260099FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9225F12B-D3FB-421F-A00C-3C9D260099FF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

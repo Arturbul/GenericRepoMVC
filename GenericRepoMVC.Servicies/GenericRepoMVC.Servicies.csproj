@@ -7,8 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="13.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\GenericRepoMVC.DataAccess\GenericRepoMVC.DataAccess.csproj" />
     <ProjectReference Include="..\GenericRepoMVC.Domain\GenericRepoMVC.Domain.csproj" />
+    <ProjectReference Include="..\GenericRepoMVC.ViewModels\GenericRepoMVC.ViewModels.csproj" />
   </ItemGroup>
 
 </Project>

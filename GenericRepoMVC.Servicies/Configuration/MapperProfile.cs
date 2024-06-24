@@ -1,13 +1,14 @@
 ﻿using AutoMapper;
 using GenericRepoMVC.Domain.Models;
-using GenericRepoMVC.WebApp.RequestModels;
+using GenericRepoMVC.ViewModels;
 
 namespace GenericRepoMVC.WebApp.Mappers
 {
-    public class PersonProfile : Profile
+    public class MapperProfile : Profile
     {
-        public PersonProfile()
+        public MapperProfile()
         {
+            //Person
             CreateMap<Person, CreatePersonRequest>().ReverseMap();
         }
     }

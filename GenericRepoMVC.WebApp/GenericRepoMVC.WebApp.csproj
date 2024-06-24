@@ -27,6 +27,7 @@
   <ItemGroup>
     <ProjectReference Include="..\GenericRepoMVC.Domain\GenericRepoMVC.Domain.csproj" />
     <ProjectReference Include="..\GenericRepoMVC.Servicies\GenericRepoMVC.Servicies.csproj" />
+    <ProjectReference Include="..\GenericRepoMVC.ViewModels\GenericRepoMVC.ViewModels.csproj" />
   </ItemGroup>
 
 </Project>
