@@ -16,7 +16,7 @@ namespace GenericRepoMVC.DataAccess
         public async Task<IEnumerable<TEntity>> Get(Expression<Func<TEntity, bool>>? filter = null,
             Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null)
         {
-            IQueryable<TEntity> query = _context.Set<TEntity>();
+            var query = _context.Set<TEntity>().AsQueryable();
 
             if (filter != null)
             {
@@ -25,12 +25,12 @@ namespace GenericRepoMVC.DataAccess
 
             if (orderBy != null)
             {
-                return await orderBy(query).ToArrayAsync();
+               query = orderBy(query);
             }
-            return await query.ToArrayAsync();
+            return await query.ToListAsync();
         }
 
-        public async Task<TEntity?> Get(Expression<Func<TEntity, bool>>? filter = null)
+        public async Task<TEntity?> GetSingle(Expression<Func<TEntity, bool>>? filter = null)
         {
             IQueryable<TEntity> query = _context.Set<TEntity>();
 
@@ -59,11 +59,10 @@ namespace GenericRepoMVC.DataAccess
         }
         public async Task<object> Delete(TEntity entity)
         {
-            var added = _context.Entry(entity);
-            added.State = EntityState.Deleted;
+            var deleted = _context.Entry(entity);
+            deleted.State = EntityState.Deleted;
 
-            await this.SaveAsync();
-            return added.Entity;
+            return await this.SaveAsync(); //changed entities count
         }
 
         public async Task<object> SaveAsync()

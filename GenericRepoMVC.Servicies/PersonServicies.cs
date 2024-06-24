@@ -19,7 +19,7 @@ namespace GenericRepoMVC.Servicies
         }
         public async Task<Person?> GetSingle(Expression<Func<Person, bool>>? filter = null)
         {
-            return await _personRepo.Get(filter);
+            return await _personRepo.GetSingle(filter);
         }
         public async Task<Person> Create(Person entity)
         {

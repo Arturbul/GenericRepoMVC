@@ -1,5 +1,4 @@
 using GenericRepoMVC.Domain.Data;
-using GenericRepoMVC.WebApp.Configuration.Swagger;
 using GenericRepoMVC.WebApp.Mappers;
 using Microsoft.EntityFrameworkCore;
 
