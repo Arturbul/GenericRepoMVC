@@ -2,6 +2,7 @@
 using GenericRepoMVC.Domain.Models;
 using GenericRepoMVC.Servicies;
 using GenericRepoMVC.ViewModels;
+using GenericRepoMVC.WebApp.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Internal;
 using System.Linq.Expressions;
@@ -32,7 +33,7 @@ namespace GenericRepoMVC.WebApp.Controllers
             {
                 return BadRequest(ModelState);
             }
-            var filter = createFilter(getPersonsRequest);
+            var filter = ExpressionBuilder.CreateFilter<Person, GetPersonRequest?>(getPersonsRequest);
             var orderBy = createOrderBy(orderByRequest);
             return Ok(await _personServicies.Get(filter: filter,orderBy: orderBy));
 
@@ -49,7 +50,7 @@ namespace GenericRepoMVC.WebApp.Controllers
             {
                 return BadRequest(ModelState);
             }
-            var filter = createFilter(getPerson);
+            var filter = ExpressionBuilder.CreateFilter<Person, GetPersonRequest?>(getPerson);
             return Ok(await _personServicies.GetSingle(filter));
 
         }
@@ -65,53 +66,6 @@ namespace GenericRepoMVC.WebApp.Controllers
             return Ok(await _personServicies.Create(person));
         }
 
-        private Expression<Func<Person, bool>> createFilter(GetPersonRequest request)
-        {
-            var parameterExp = Expression.Parameter(typeof(Person), "p");
-            var expressions = new List<Expression>();
-
-            if (request.Id != null)
-            {
-                var idExp = Expression.Property(parameterExp, nameof(Person.Id));
-                var idValue = Expression.Constant(request.Id);
-                expressions.Add(Expression.Equal(idExp, idValue));
-            }
-
-            if (!string.IsNullOrEmpty(request.FirstName))
-            {
-                var firstNameExp = Expression.Property(parameterExp, "FirstName");
-                var firstNameValue = Expression.Constant(request.FirstName);
-                expressions.Add(Expression.Call(firstNameExp, "Contains", null, firstNameValue));
-            }
-
-            if (!string.IsNullOrEmpty(request.LastName))
-            {
-                var lastNameExp = Expression.Property(parameterExp, nameof(Person.LastName));
-                var lastNameValue = Expression.Constant(request.LastName);
-                expressions.Add(Expression.Call(lastNameExp, "Contains", null, lastNameValue));
-            }
-
-            if (request.DateOfBirthFrom != null)
-            {
-                var dateOfBirthFromExp = Expression.Property(parameterExp, nameof(Person.DateOfBirth));
-                var dateOfBirthFromValue = Expression.Constant(request.DateOfBirthFrom.Value);
-                expressions.Add(Expression.GreaterThanOrEqual(dateOfBirthFromExp, dateOfBirthFromValue));
-            }
-
-            if (request.DateOfBirthTo != null)
-            {
-                var dateOfBirthToExp = Expression.Property(parameterExp, nameof(Person.DateOfBirth));
-                var dateOfBirthToValue = Expression.Constant(request.DateOfBirthTo.Value);
-                expressions.Add(Expression.LessThanOrEqual(dateOfBirthToExp, dateOfBirthToValue));
-            }
-
-            Expression body = expressions.Count > 0
-                ? expressions.Aggregate(Expression.AndAlso)
-                : Expression.Constant(true);
-
-            var lambda = Expression.Lambda<Func<Person, bool>>(body, parameterExp);
-            return lambda;
-        }
         private Func<IQueryable<Person>, IOrderedQueryable<Person>>? createOrderBy(PersonOrderByRequest? orderByRequest)
         {
             if (orderByRequest == null || areAllPropertiesDefault(orderByRequest))
@@ -156,20 +110,6 @@ namespace GenericRepoMVC.WebApp.Controllers
                 return orderedQuery;
             };
         }
-
-      /*  private bool areAllPropertiesDefault(PersonOrderByRequest orderByRequest)
-        {
-            var props = orderByRequest.GetType().GetProperties();
-            foreach (var prop in props)
-            {
-                if(prop.GetValue(orderByRequest) != null 
-                    &&  !prop.PropertyType.IsDefaultValue(prop.GetValue(orderByRequest))) //may be not supported in the future
-                {
-                    return false;
-                }
-            }   
-            return true;
-        }*/
 
         private bool areAllPropertiesDefault(PersonOrderByRequest orderByRequest)
         {
