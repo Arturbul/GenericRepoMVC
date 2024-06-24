@@ -157,17 +157,43 @@ namespace GenericRepoMVC.WebApp.Controllers
             };
         }
 
+      /*  private bool areAllPropertiesDefault(PersonOrderByRequest orderByRequest)
+        {
+            var props = orderByRequest.GetType().GetProperties();
+            foreach (var prop in props)
+            {
+                if(prop.GetValue(orderByRequest) != null 
+                    &&  !prop.PropertyType.IsDefaultValue(prop.GetValue(orderByRequest))) //may be not supported in the future
+                {
+                    return false;
+                }
+            }   
+            return true;
+        }*/
+
         private bool areAllPropertiesDefault(PersonOrderByRequest orderByRequest)
         {
             var props = orderByRequest.GetType().GetProperties();
             foreach (var prop in props)
             {
-                if(prop.GetValue(orderByRequest) != null &&  !prop.PropertyType.IsDefaultValue(prop.GetValue(orderByRequest)))
+                var value = prop.GetValue(orderByRequest);
+                var defaultValue = GetDefaultValue(prop.PropertyType);
+
+                if (!Equals(value, defaultValue))
                 {
                     return false;
                 }
             }
             return true;
+        }
+
+        private object? GetDefaultValue(Type type)
+        {
+            if (type.IsValueType)
+            {
+                return Activator.CreateInstance(type);
+            }
+            return null;
         }
 
         private IEnumerable<string> getPropertiesNameInOrder(PersonOrderByRequest orderByRequest)
