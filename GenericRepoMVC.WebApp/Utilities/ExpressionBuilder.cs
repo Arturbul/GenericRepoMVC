@@ -60,28 +60,12 @@ namespace GenericRepoMVC.WebApp.Utilities
 
         public static Func<IQueryable<T>, IOrderedQueryable<T>>? CreateOrderBy<T, TRequest>(TRequest? orderByRequest)
         {
-            if (orderByRequest == null || areAllPropertiesDefault(orderByRequest))
+            if (orderByRequest == null || AreAllPropertiesDefault(orderByRequest))
             {
                 return null;
             }
 
-            var sortedRequestDict = getPropertiesNameInOrder(orderByRequest);
-
-            IOrderedQueryable<T> ApplyOrdering(IQueryable<T> query, string propertyName, bool isFirst)
-            {
-                var parameter = Expression.Parameter(typeof(T), "p");
-                var property = Expression.Property(parameter, propertyName);
-                var lambda = Expression.Lambda<Func<T, object>>(Expression.Convert(property, typeof(object)), parameter);
-
-                if (isFirst)
-                {
-                    return query.OrderBy(lambda);
-                }
-                else
-                {
-                    return ((IOrderedQueryable<T>)query).ThenBy(lambda);
-                }
-            }
+            var sortedRequestDict = GetOrderedPropertyNames(orderByRequest);
 
             return query =>
             {
@@ -103,7 +87,7 @@ namespace GenericRepoMVC.WebApp.Utilities
             };
         }
 
-        private static bool areAllPropertiesDefault<TRequest>(TRequest orderByRequest)
+        private static bool AreAllPropertiesDefault<TRequest>(TRequest orderByRequest)
         {
             var props = orderByRequest!.GetType().GetProperties();
             foreach (var prop in props)
@@ -128,7 +112,7 @@ namespace GenericRepoMVC.WebApp.Utilities
             return null;
         }
 
-        private static IEnumerable<string> getPropertiesNameInOrder<TRequest>(TRequest orderByRequest)
+        private static string[] GetOrderedPropertyNames<TRequest>(TRequest orderByRequest)
         {
             // 0 0 1 2 
             //id fname lname date
@@ -146,6 +130,22 @@ namespace GenericRepoMVC.WebApp.Utilities
                 .OrderBy(e => e.Value)
                 .ToDictionary();
             return sortedDict.Keys.ToArray();
+        }
+
+        private static IOrderedQueryable<T> ApplyOrdering<T>(IQueryable<T> query, string propertyName, bool isFirst)
+        {
+            var parameter = Expression.Parameter(typeof(T), "p");
+            var property = Expression.Property(parameter, propertyName);
+            var lambda = Expression.Lambda<Func<T, object>>(Expression.Convert(property, typeof(object)), parameter);
+
+            if (isFirst)
+            {
+                return query.OrderBy(lambda);
+            }
+            else
+            {
+                return ((IOrderedQueryable<T>)query).ThenBy(lambda);
+            }
         }
     }
 }
