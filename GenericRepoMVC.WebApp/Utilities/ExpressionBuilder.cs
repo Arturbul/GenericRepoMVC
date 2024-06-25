@@ -1,4 +1,6 @@
-﻿using System.Linq.Expressions;
+﻿using GenericRepoMVC.Domain.Models;
+using GenericRepoMVC.ViewModels;
+using System.Linq.Expressions;
 
 namespace GenericRepoMVC.WebApp.Utilities
 {
@@ -54,6 +56,96 @@ namespace GenericRepoMVC.WebApp.Utilities
 
             var lambda = Expression.Lambda<Func<T, bool>>(body, parameterExp);
             return lambda;
+        }
+
+        public static Func<IQueryable<T>, IOrderedQueryable<T>>? CreateOrderBy<T, TRequest>(TRequest? orderByRequest)
+        {
+            if (orderByRequest == null || areAllPropertiesDefault(orderByRequest))
+            {
+                return null;
+            }
+
+            var sortedRequestDict = getPropertiesNameInOrder(orderByRequest);
+
+            IOrderedQueryable<T> ApplyOrdering(IQueryable<T> query, string propertyName, bool isFirst)
+            {
+                var parameter = Expression.Parameter(typeof(T), "p");
+                var property = Expression.Property(parameter, propertyName);
+                var lambda = Expression.Lambda<Func<T, object>>(Expression.Convert(property, typeof(object)), parameter);
+
+                if (isFirst)
+                {
+                    return query.OrderBy(lambda);
+                }
+                else
+                {
+                    return ((IOrderedQueryable<T>)query).ThenBy(lambda);
+                }
+            }
+
+            return query =>
+            {
+                IOrderedQueryable<T>? orderedQuery = null;
+
+                foreach (var propertyName in sortedRequestDict)
+                {
+                    if (orderedQuery == null)
+                    {
+                        orderedQuery = ApplyOrdering(query, propertyName, true);
+                    }
+                    else
+                    {
+                        orderedQuery = ApplyOrdering(orderedQuery, propertyName, false);
+                    }
+                }
+
+                return orderedQuery!;
+            };
+        }
+
+        private static bool areAllPropertiesDefault<TRequest>(TRequest orderByRequest)
+        {
+            var props = orderByRequest!.GetType().GetProperties();
+            foreach (var prop in props)
+            {
+                var value = prop.GetValue(orderByRequest);
+                var defaultValue = GetDefaultValue(prop.PropertyType);
+
+                if (!Equals(value, defaultValue))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        private static object? GetDefaultValue(Type type)
+        {
+            if (type.IsValueType)
+            {
+                return Activator.CreateInstance(type);
+            }
+            return null;
+        }
+
+        private static IEnumerable<string> getPropertiesNameInOrder<TRequest>(TRequest orderByRequest)
+        {
+            // 0 0 1 2 
+            //id fname lname date
+            var props = orderByRequest!.GetType().GetProperties(); //prop names 4 orderby
+            var orderPriorityPairs = new Dictionary<string, int>();
+            foreach (var prop in props)
+            {
+                var value = (int)prop.GetValue(orderByRequest)!;
+                if (value != 0)
+                {
+                    orderPriorityPairs.Add(prop.Name.Replace("OrderBy", ""), value);
+                }
+            }
+            var sortedDict = orderPriorityPairs
+                .OrderBy(e => e.Value)
+                .ToDictionary();
+            return sortedDict.Keys.ToArray();
         }
     }
 }
