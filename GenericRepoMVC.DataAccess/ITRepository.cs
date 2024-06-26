@@ -11,7 +11,7 @@ namespace GenericRepoMVC.DataAccess
         Task<TEntity?> GetSingle(Expression<Func<TEntity, bool>>? filter = null);
         Task<TEntity> Create(TEntity entity);
         Task<TEntity> Update(TEntity entity);
-        Task<object> Delete(TEntity entity);
-        Task<object> SaveAsync();
+        Task<int> Delete(TEntity entity);
+        Task<int> SaveAsync();
     }
 }

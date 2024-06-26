@@ -57,7 +57,7 @@ namespace GenericRepoMVC.DataAccess
             await this.SaveAsync();
             return updated.Entity;
         }
-        public async Task<object> Delete(TEntity entity)
+        public async Task<int> Delete(TEntity entity)
         {
             var deleted = _context.Entry(entity);
             deleted.State = EntityState.Deleted;
@@ -65,7 +65,7 @@ namespace GenericRepoMVC.DataAccess
             return await this.SaveAsync(); //changed entities count
         }
 
-        public async Task<object> SaveAsync()
+        public async Task<int> SaveAsync()
         {
             try
             {
