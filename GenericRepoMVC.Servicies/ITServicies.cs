@@ -8,8 +8,7 @@ namespace GenericRepoMVC.Servicies
         Task<IEnumerable<TEntity>> Get(Expression<Func<TEntity, bool>>? filter = null,
             Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null);
         Task<TEntity?> GetSingle(Expression<Func<TEntity, bool>>? filter = null);
-        Task<TEntity> Create(TEntity entity);
-        Task<TEntity> Update(TEntity entity);
-        Task<object> Delete(TEntity entity);
+        Task<TEntity> CreateOrUpdate(TEntity entity);
+        Task<int> Delete(TEntity entity);
     }
 }

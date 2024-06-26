@@ -21,16 +21,14 @@ namespace GenericRepoMVC.Servicies
         {
             return await _personRepo.GetSingle(filter);
         }
-        public async Task<Person> Create(Person entity)
+        public async Task<Person> CreateOrUpdate(Person entity)
         {
-            var result = await _personRepo.Create(entity);
-            return result;
+            return entity.Id ==0 ? 
+                await _personRepo.Create(entity) 
+                : await _personRepo.Update(entity);
         }
-        public Task<Person> Update(Person entity)
-        {
-            return _personRepo.Update(entity);
-        }
-        public Task<object> Delete(Person entity)
+     
+        public Task<int> Delete(Person entity)
         {
             return _personRepo.Delete(entity);
         }

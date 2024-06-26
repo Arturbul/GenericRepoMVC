@@ -9,7 +9,7 @@ namespace GenericRepoMVC.WebApp.Mappers
         public MapperProfile()
         {
             //Person
-            CreateMap<Person, CreatePersonRequest>().ReverseMap();
+            CreateMap<Person, CreateOrUpdatePersonRequest>().ReverseMap();
         }
     }
 }
